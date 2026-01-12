@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Order</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex justify-center mt-24 px-4">
+  <div class="bg-[#1b1410] p-8 w-full max-w-md rounded-3xl 
+              border border-[#c8a165]/20 
+              shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+
+    <div class="font-bold text-xl text-[#c8a165] tracking-wide mb-3">
+      YOUR ORDER
+    </div>
+    <hr class="border-[#c8a165]/20">
+
+    <div class="flex items-center justify-between mt-5">
+      <div>
+        <div id="productName" class="font-semibold text-sm text-[#f3ede7]"></div>
+        <div class="text-xs text-[#b6a89a] mt-1">
+          IDR <span id="priceText"></span> / item
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="changeQty(-1)"
+          class="px-3 py-1 rounded-full bg-[#2a1f18] text-[#c8a165]
+                 hover:bg-[#c8a165] hover:text-[#1b1410] transition">
+          −
+        </button>
+
+        <span id="qty" class="font-semibold text-[#f3ede7]">1</span>
+
+        <button onclick="changeQty(1)"
+          class="px-3 py-1 rounded-full bg-[#2a1f18] text-[#c8a165]
+                 hover:bg-[#c8a165] hover:text-[#1b1410] transition">
+          +
+        </button>
+      </div>
+    </div>
+
+    <hr class="my-6 border-[#c8a165]/20">
+
+    <div class="flex justify-between font-semibold text-[#c8a165]">
+      <span>Total Price</span>
+      <span>IDR <span id="totalPrice"></span></span>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT -->
+<div class="flex justify-center mt-8 px-4">
+  <div class="bg-[#1b1410] p-8 w-full max-w-md rounded-3xl 
+              border border-[#c8a165]/20">
+
+    <div class="font-bold text-xl text-[#c8a165] tracking-wide">
+      PAYMENT METHOD
+    </div>
+    <hr class="mt-3 border-[#c8a165]/20">
+
+    <form onsubmit="handleSubmit(event)">
+      <div class="mt-5">
+        <select id="paymentMethod"
+          class="w-full bg-[#120d0a] text-[#f3ede7]
+                 border border-[#c8a165]/30
+                 rounded-xl p-3 text-sm
+                 focus:outline-none focus:ring-1 focus:ring-[#c8a165]"
+          onchange="handlePaymentChange()">
+          <option value="">Pilih Payment</option>
+          <option value="gopay">Gopay</option>
+          <option value="dana">Dana</option>
+          <option value="ovo">OVO</option>
+        </select>
+      </div>
+
+      <div id="paymentDetail" class="mt-6 hidden text-center">
+        <p class="text-[#b6a89a] text-sm">Nomor Pembayaran</p>
+        <p id="paymentNumber" class="font-bold text-lg text-[#f3ede7] mt-1"></p>
+        <img id="paymentQr"
+          class="w-40 h-40 mx-auto mt-4 rounded-xl bg-white p-2">
+      </div>
+
+      <div class="flex gap-4 mt-6">
+        <button type="submit"
+          class="flex-1 py-2 rounded-full font-semibold
+                 bg-gradient-to-r from-[#c8a165] to-[#8b5e34]
+                 text-[#1b1410] hover:brightness-110 transition">
+          Submit
+        </button>
+
+        <button type="button" onclick="showToastCancel()"
+          class="flex-1 py-2 rounded-full font-semibold
+                 border border-red-500/60 text-red-400
+                 hover:bg-red-600 hover:text-white transition">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"
+  class="fixed top-6 right-6 bg-[#c8a165] text-[#1b1410]
+         px-6 py-3 rounded-xl opacity-0 transition shadow-lg">
+✔ Payment berhasil!
+</div>
+
+<div id="toastCancel"
+  class="fixed top-6 right-6 bg-red-600 text-white
+         px-6 py-3 rounded-xl opacity-0 transition shadow-lg">
+✖ Payment dibatalkan!
+</div>
+
+
+<script>
+  const products = {
+    arabica: { name: "Coffee Arabica", price: 30000 },
+    robusta: { name: "Coffee Robusta", price: 25000 }
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const productCode = params.get("product") || "arabica";
+
+  let qty = 1;
+  let price = products[productCode].price;
+
+  document.getElementById("productName").textContent = products[productCode].name;
+  document.getElementById("priceText").textContent = price;
+  document.getElementById("totalPrice").textContent = price;
+
+  function changeQty(val) {
+    qty = Math.max(1, qty + val);
+    document.getElementById("qty").textContent = qty;
+    document.getElementById("totalPrice").textContent = qty * price;
+  }
+
+  function handlePaymentChange() {
+    const method = paymentMethod.value;
+    const detail = document.getElementById("paymentDetail");
+
+    if (!method) return detail.classList.add("hidden");
+
+    detail.classList.remove("hidden");
+    paymentNumber.textContent = method === "gopay" ? "12345" : method === "dana" ? "67890" : "08520";
+    paymentQr.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${method}`;
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    showToast("toast");
+  }
+
+  function showToast(id) {
+    const t = document.getElementById(id);
+    t.classList.remove("opacity-0");
+    setTimeout(() => t.classList.add("opacity-0"), 3000);
+  }
+
+  function showToastCancel() {
+    showToast("toastCancel");
+  }
+</script>
+
+</body>
+</html>

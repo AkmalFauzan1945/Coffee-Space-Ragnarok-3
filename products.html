@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Products</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<nav>
+  <h2>Products</h2>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<button class="back-btn" onclick="history.back()">← Kembali</button>
+
+<section class="content">
+  <h1>Our Products</h1>
+
+  <div class="card">
+    <h3>Coffee Arabica</h3>
+    <p>Kopi premium aroma floral</p>
+    <button onclick="orderProduct('arabica')">Order</button>
+  </div>
+
+  <div class="card">
+    <h3>Coffee Robusta</h3>
+    <p>Kopi kuat & bold</p>
+    <button onclick="orderProduct('robusta')">Order</button>
+  </div>
+</section>
+
+<script>
+  function orderProduct(code) {
+    window.location.href = "order.html?product=" + code;
+  }
+</script>
+
+</body>
+</html>
